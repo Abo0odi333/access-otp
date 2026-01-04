@@ -1,1 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>صفحة العميل</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body onload="clientInit()">
+  <div class="container">
+    <div class="header">
+      <h2 id="accLabel2">صفحة العميل</h2>
+      <a class="btn secondary" href="index.html">الرئيسية</a>
+    </div>
+
+    <div id="clientErr" class="card error">جاري التحميل...</div>
+
+    <div id="clientCard" class="card" style="display:none">
+      <div class="kpi">
+        <div class="pill">المحاولات المتبقية: <b id="attemptsLeft2"></b> / <span id="maxAttempts2"></span></div>
+      </div>
+
+      <hr />
+
+      <h3>بيانات الدخول</h3>
+      <div class="row">
+        <div>
+          <label>الإيميل</label>
+          <input id="accEmail2" readonly />
+        </div>
+        <div>
+          <label>الباسورد</label>
+          <input id="accPass2" readonly />
+        </div>
+      </div>
+
+      <hr />
+
+      <h3>تعليمات</h3>
+      <div class="card" style="background:rgba(0,0,0,.18)">
+        <div id="instructions2" class="notice"></div>
+      </div>
+
+      <hr />
+
+      <h3>كود التحقق (6 أرقام)</h3>
+      <div id="codeBox" class="codebox">------</div>
+
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn" onclick="revealCode()">إظهار الكود</button>
+        <button class="btn secondary" onclick="copy(document.getElementById('codeBox').textContent)">نسخ الكود</button>
+      </div>
+
+      <p class="small" style="margin-top:10px;">
+        ملاحظة: عند الضغط على “إظهار الكود” سيتم خصم محاولة واحدة من رصيدك.
+      </p>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
 
