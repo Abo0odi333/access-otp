@@ -1,1 +1,32 @@
-
+:root { --bg:#0b1220; --card:#121b2e; --txt:#e8eefc; --muted:#9fb0d0; --accent:#5aa7ff; --danger:#ff5a7a; }
+* { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+body { margin:0; background:var(--bg); color:var(--txt); }
+a { color: var(--accent); text-decoration: none; }
+.container { max-width: 980px; margin: 0 auto; padding: 24px; }
+.header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
+.card { background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px; margin:12px 0; }
+.row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+@media (max-width: 800px){ .row { grid-template-columns: 1fr; } }
+label { display:block; font-size: 12px; color: var(--muted); margin-bottom:6px; }
+input, textarea, select {
+  width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.25); color: var(--txt); outline:none;
+}
+textarea { min-height: 110px; resize: vertical; }
+.btn {
+  border:0; border-radius: 12px; padding: 12px 14px; cursor:pointer;
+  background: var(--accent); color:#07101f; font-weight: 700;
+}
+.btn.secondary { background: rgba(255,255,255,.10); color: var(--txt); }
+.btn.danger { background: var(--danger); color:#1a0710; }
+.small { font-size: 12px; color: var(--muted); }
+.kpi { display:flex; gap:12px; flex-wrap: wrap; }
+.pill { padding:8px 10px; border-radius: 999px; background: rgba(255,255,255,.08); color: var(--txt); font-size: 12px; }
+hr { border:0; border-top:1px solid rgba(255,255,255,.08); margin: 14px 0; }
+.codebox { font-size: 42px; letter-spacing: 6px; text-align:center; padding: 16px; border-radius: 16px; background: rgba(0,0,0,.25); }
+.notice { color: var(--muted); line-height: 1.7; }
+.error { color: var(--danger); font-weight: 700; }
+table { width:100%; border-collapse: collapse; }
+th, td { padding:10px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; font-size: 13px; }
+th { color: var(--muted); font-weight: 700; }
+.actions { display:flex; gap:10px; flex-wrap: wrap; align-items:center; }
