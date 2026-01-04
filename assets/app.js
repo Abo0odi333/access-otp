@@ -47,8 +47,19 @@ function copyText(text) {
 }
 
 /* =========================
-   MERCHANT (ADMIN)
+   MERCHANT (per-store)
 ========================= */
+
+// storeId ثابت من الرابط: merchant.html?store=myshop
+function currentStoreId() {
+  const storeId = (qs("store") || "").trim();
+  return storeId;
+}
+
+function tokenKey() {
+  // نخزن توكن منفصل لكل متجر
+  return "adminToken:" + currentStoreId();
+}
 
 function showErr(msg) {
   setText("errBox", msg || "Error");
@@ -63,42 +74,40 @@ function clearErr() {
 }
 
 function adminToken() {
-  const t = sessionStorage.getItem("adminToken");
+  const t = sessionStorage.getItem(tokenKey());
   if (!t) throw new Error("Not logged in");
   return t;
 }
 
-function getSavedStoreId() {
-  return localStorage.getItem("storeId") || "";
-}
-
-function fillSavedStoreId() {
-  const v = getSavedStoreId();
-  const el = document.getElementById("storeId");
-  if (el && v) el.value = v;
-}
-
 async function merchantInit() {
-  const token = sessionStorage.getItem("adminToken");
+  clearErr();
+
+  const storeId = currentStoreId();
+  if (!storeId) {
+    showErr("الرابط لازم يحتوي storeId مثل: merchant.html?store=myshop");
+    return;
+  }
+
+  setText("storeIdView", storeId);
+  setText("storeTitle", "لوحة المتجر: " + storeId);
+
+  const token = sessionStorage.getItem(tokenKey());
   if (token) {
-    const loginCard = document.getElementById("loginCard");
-    const mainCard = document.getElementById("mainCard");
-    if (loginCard) loginCard.style.display = "none";
-    if (mainCard) mainCard.style.display = "block";
+    // عرض اللوحة
+    document.getElementById("loginCard").style.display = "none";
+    document.getElementById("mainCard").style.display = "block";
     await loadAccounts();
-  } else {
-    fillSavedStoreId();
   }
 }
 
 async function adminLogin() {
   clearErr();
 
-  const storeId = (document.getElementById("storeId")?.value || "").trim();
+  const storeId = currentStoreId();
   const password = document.getElementById("adminPassword")?.value || "";
 
   if (!storeId || !password) {
-    showErr("اكتب Store ID وكلمة المرور");
+    showErr("اكتب كلمة المرور.");
     return;
   }
 
@@ -108,13 +117,12 @@ async function adminLogin() {
     return;
   }
 
-  localStorage.setItem("storeId", storeId);
-  sessionStorage.setItem("adminToken", out.token);
+  sessionStorage.setItem(tokenKey(), out.token);
   location.reload();
 }
 
 function logout() {
-  sessionStorage.removeItem("adminToken");
+  sessionStorage.removeItem(tokenKey());
   location.reload();
 }
 
@@ -129,7 +137,6 @@ async function loadAccounts() {
 
   const items = out.items || [];
 
-  // select options
   const sel = document.getElementById("accountSelect");
   if (sel) {
     sel.innerHTML = items.map(a =>
@@ -137,7 +144,6 @@ async function loadAccounts() {
     ).join("");
   }
 
-  // table
   const rows = items.map(a => `
     <tr>
       <td>${escapeHtml(a.label || "")}</td>
@@ -147,7 +153,7 @@ async function loadAccounts() {
     </tr>
   `).join("");
 
-  setHtml("accountsTableBody", rows || `<tr><td colspan="4" class="small">No accounts yet</td></tr>`);
+  setHtml("accountsTableBody", rows || `<tr><td colspan="4" class="small">لا توجد حسابات لهذا المتجر</td></tr>`);
 }
 
 async function createAccount() {
@@ -170,8 +176,7 @@ async function createAccount() {
     return;
   }
 
-  // clear inputs
-  ["accId","accLabel","accEmail","accPass","accSecret","accInstr","accNote"].forEach(id => {
+  ["accId","accLabel","accEmail","accPass","accSecret","accInstr"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = "";
   });
@@ -199,10 +204,10 @@ async function createClients() {
     return;
   }
 
-  const base = location.origin + location.pathname.replace("merchant.html", "client.html");
+  const baseClient = location.origin + location.pathname.replace("merchant.html", "client.html");
 
   const cards = (out.created || []).map(x => {
-    const url = `${base}?id=${encodeURIComponent(x.clientId)}`;
+    const url = `${baseClient}?id=${encodeURIComponent(x.clientId)}`;
     return `
       <div class="card">
         <div class="small">رابط العميل</div>
@@ -222,7 +227,7 @@ async function createClients() {
 ========================= */
 
 async function clientInit() {
-  const clientId = qs("id");
+  const clientId = (qs("id") || "").trim();
   if (!clientId) {
     setText("clientErr", "الرابط غير صحيح (مفقود id).");
     return;
@@ -240,6 +245,7 @@ async function clientInit() {
   if (card) card.style.display = "block";
 
   setText("accLabel2", info.account.label || "صفحة العميل");
+
   const emailEl = document.getElementById("accEmail2");
   const passEl  = document.getElementById("accPass2");
   if (emailEl) emailEl.value = info.account.email || "";
